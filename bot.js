@@ -1,6 +1,7 @@
-const fs = require('fs');
-const csv = require('csv-parser');
-const { Client, GatewayIntentBits } = require('discord.js');
+import fs from 'fs';
+import csv from 'csv-parser';
+import { Client, GatewayIntentBits } from 'discord.js';
+import { TOKEN, SERVER_ID, CLIENT_ID } from './config.js';
 
 const client = new Client({
   intents: [
@@ -10,13 +11,16 @@ const client = new Client({
   ],
 });
 
-const TOKEN = 'MTE0OTc0MDU2NDg4ODE1ODM1OQ.G-2QOr.ybjqnFGNO4W9iFt_yqOmsn7dF4rtyVV9NMxtQE';
-
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}`);
 
-  // Your role-updating code here
-  const guild = client.guilds.cache.first(); // Assuming the bot is only in one guild
+  const guild = client.guilds.cache.get(SERVER_ID); // Using SERVER_ID from config.js
+
+  if (!guild) {
+    console.error(`Error: Guild with ID ${SERVER_ID} not found.`);
+    return;
+  }
+
   const placementStudentRole = guild.roles.cache.find((role) => role.name === 'placement-student');
 
   if (!placementStudentRole) {
@@ -32,15 +36,13 @@ client.on('ready', async () => {
         data.push(row);
       })
       .on('end', () => {
-        // Process the data and update roles for placement students
         const placementStudents = guild.members.cache.filter((member) =>
           member.roles.cache.has(placementStudentRole.id),
         );
 
         placementStudents.forEach((student) => {
-          // Extract student ID from nickname
           const nickname = student.displayName;
-          const idMatch = nickname.match(/UP(\d{5,7})/i);
+          const idMatch = nickname.match(/up(\d{5,7})/i);
 
           if (!idMatch) {
             console.error(`Error: Invalid nickname format for ${nickname}`);
@@ -51,14 +53,11 @@ client.on('ready', async () => {
           const matchingRow = data.find((row) => row['Student No'] === studentId);
 
           if (matchingRow && matchingRow['Block Number'] === '4') {
-            // Remove existing roles
             student.roles.remove([...student.roles.cache.keys()]);
-
-            // Add new roles
             student.roles.add([
               '1149738387033559140', // test
               '1149706993813176452', // L6
-              getCourseRole(matchingRow.Course), // Get the course role based on CSV data
+              getCourseRole(matchingRow.Course),
             ]);
           }
         });
@@ -68,7 +67,6 @@ client.on('ready', async () => {
   }
 });
 
-// Helper function to map course names to role names
 function getCourseRole(courseName) {
   const courseRoleMap = {
     'BSC (HONS) COMPUTER SCIENCE': 'compsi',
