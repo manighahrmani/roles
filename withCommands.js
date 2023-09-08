@@ -4,6 +4,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN, SERVER_ID, CLIENT_ID, PATH_TO_CSV } from './config.js';
+import { courseRoleMap } from './courseRoleMap.js';
 
 const client = new Client({
   intents: [
@@ -56,9 +57,13 @@ client.on('interactionCreate', async (interaction) => {
         fs.createReadStream(PATH_TO_CSV)
           .pipe(csv())
           .on('data', (row) => {
+            console.log(`Reading row: ${JSON.stringify(row)}`);
             data.push(row);
           })
-          .on('end', resolve)
+          .on('end', () => {
+            console.log(`Finished reading CSV. Total rows: ${data.length}`);
+            resolve();
+          })
           .on('error', reject);
       });
 
@@ -83,8 +88,9 @@ client.on('interactionCreate', async (interaction) => {
         console.log(`Parsed ID ${studentId} for student ${nickname}.`);
 
         const matchingRow = data.find((row) => row['Student No'] === studentId);
+
         if (!matchingRow) {
-          console.error(`Error: No matching row for student ${nickname}.`);
+          console.error(`Error: No matching row found for student ID ${studentId}.`);
           return;
         }
 
@@ -107,10 +113,6 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 function getCourseRole(courseName) {
-  const courseRoleMap = {
-    // your mappings here
-  };
-
   return courseRoleMap[courseName] || null;
 }
 
