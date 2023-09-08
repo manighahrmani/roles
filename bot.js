@@ -42,7 +42,11 @@ client.on('ready', async () => {
 
         placementStudents.forEach((student) => {
           const nickname = student.displayName;
-          const idMatch = nickname.match(/up(\d{5,7})/i);
+          // Q: does the next regex pick up on: "mani g / up123456"?
+          // A: no, it doesn't. It only picks up on "UP123456"
+          // Q: Change the regex to pick up on "mani g / up123456"?
+          // const idMatch = nickname.match(/UP(\d{5,7})/i);
+          const idMatch = nickname.match(/UP(\d{5,7})/i);
 
           if (!idMatch) {
             console.error(`Error: Invalid nickname format for ${nickname}`);
