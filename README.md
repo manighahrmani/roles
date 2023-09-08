@@ -20,6 +20,7 @@
 
    The permissions integer will be `268577696`.
 
+Alternatively go to `OAuth2` tab, in the drop-down select `URL Generator`, select `bot` as the `SCOPES` and then select the bot permissions in the `BOT PERMISSIONS` section. This will generate a URL that you can use to invite the bot to your server.
 ### Step 3: Get the Bot Token, Server ID, and Client ID
 
 1. **Bot Token**: Under the `Bot` tab, find and copy the `TOKEN` by clicking `Copy` under the `TOKEN` section.
