@@ -1,13 +1,12 @@
 import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
-import { TOKEN, SERVER_ID, CLIENT_ID } from './config.js';
+import { TOKEN, SERVER_ID } from './config.js';
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
-    // Add other needed intents here
   ],
 });
 
@@ -42,10 +41,6 @@ client.on('ready', async () => {
 
         placementStudents.forEach((student) => {
           const nickname = student.displayName;
-          // Q: does the next regex pick up on: "mani g / up123456"?
-          // A: no, it doesn't. It only picks up on "UP123456"
-          // Q: Change the regex to pick up on "mani g / up123456"?
-          // const idMatch = nickname.match(/UP(\d{5,7})/i);
           const idMatch = nickname.match(/UP(\d{5,7})/i);
 
           if (!idMatch) {
