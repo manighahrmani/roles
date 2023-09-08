@@ -83,6 +83,10 @@ client.on('interactionCreate', async (interaction) => {
         console.log(`Parsed ID ${studentId} for student ${nickname}.`);
 
         const matchingRow = data.find((row) => row['Student No'] === studentId);
+        if (!matchingRow) {
+          console.error(`Error: No matching row for student ${nickname}.`);
+          return;
+        }
 
         if (matchingRow && matchingRow['Block Number'] === '4') {
           console.log(`Updating roles for ${nickname}`);
