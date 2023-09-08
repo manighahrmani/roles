@@ -36,35 +36,35 @@
 
 Populate the `config.js` with the following constants:
 
-`\`\`\`js`
+```js
 export const TOKEN = "Your_Token_Here";
 export const SERVER_ID = "Your_Server_ID_Here";
 export const CLIENT_ID = "Your_Client_ID_Here";
 export const PATH_TO_CSV = "Path_to_your_CSV_file";
-\`\`\`
+```
 
 ### Step 5: Install Dependencies
 
 Open your terminal, navigate to your project folder and run:
 
-\`\`\`bash
+```js
 npm install discord.js csv-parser
-\`\`\`
+```
 
 ### Step 6: Run the Bot
 
 1. To run the bot with commands, execute:
 
-   \`\`\`bash
+   ```js
    node withCommands.js
-   \`\`\`
+   ```
+
+   Then in a channel with the bot, type `/updateRoles` (e.g., in `#ptchat-mani-l7`).
 
 2. To run the bot without commands, execute:
 
-   \`\`\`bash
+   ```js
    node withoutCommands.js
-   \`\`\`
-
-And there you have it! Your bot should be up and running.
+   ```
 
 ---
