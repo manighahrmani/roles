@@ -31,7 +31,7 @@ Alternatively go to `OAuth2` tab, in the drop-down select `URL Generator`, selec
 
 1. Create a new directory for your project.
 2. Inside this directory, create two JavaScript files named `withCommands.js` and `withoutCommands.js`.
-3. Also create a `config.js` file.
+3. Also create a `config.js` file and a `courseRoleMap.js` file.
 
 #### Inside `config.js`
 
@@ -44,7 +44,23 @@ export const CLIENT_ID = "Your_Client_ID_Here";
 export const PATH_TO_CSV = "Path_to_your_CSV_file";
 ```
 
-### Step 5: Install Dependencies
+Inside `courseRoleMap.js`, you will map the course names to Discord Role IDs::
+
+```js
+export const courseRoleMap = {
+  'BSC (HONS) COMPUTER SCIENCE': 'actualSnowflakeIDHere',
+  // Add more mappings here
+};
+```
+
+### Step 5: Fetching Role IDs from Discord Server
+
+1. Open Discord and go to the server where your bot resides.
+1. Make sure you have `Developer Mode` enabled in Discord settings.
+1. Right-click on the role name you want to map and click `Copy ID`.
+1. Place this ID in the `courseRoleMap.js` next to the relevant course name.
+
+### Step 6: Install Dependencies
 
 Open your terminal, navigate to your project folder and run:
 
