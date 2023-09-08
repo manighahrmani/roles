@@ -52,45 +52,50 @@ client.on('interactionCreate', async (interaction) => {
 
     try {
       const data = [];
-      fs.createReadStream(PATH_TO_CSV)
-        .pipe(csv())
-        .on('data', (row) => {
-          data.push(row);
-        })
-        .on('end', () => {
-          const placementStudents = guild.members.cache.filter((member) =>
-            member.roles.cache.has(placementStudentRole.id),
-          );
+      await new Promise((resolve, reject) => {
+        fs.createReadStream(PATH_TO_CSV)
+          .pipe(csv())
+          .on('data', (row) => {
+            data.push(row);
+          })
+          .on('end', resolve)
+          .on('error', reject);
+      });
 
-          console.log(`Found ${placementStudents.size} students with the role "placement-student".`);
+      // Fetching members with the role
+      await guild.members.fetch();
+      const placementStudents = guild.members.cache.filter((member) =>
+        member.roles.cache.has(placementStudentRole.id),
+      );
 
-          placementStudents.forEach((student) => {
-            const nickname = student.displayName;
-            const idMatch = nickname.match(/UP(\d{5,7})/i);
+      console.log(`Found ${placementStudents.size} students with the role "placement-student".`);
 
-            if (!idMatch) {
-              console.error(`Error: Invalid nickname format for ${nickname}`);
-              return;
-            }
+      placementStudents.forEach((student) => {
+        const nickname = student.displayName;
+        const idMatch = nickname.match(/UP(\d{5,7})/i);
 
-            const studentId = idMatch[1];
-            console.log(`Parsed ID ${studentId} for student ${nickname}.`);
+        if (!idMatch) {
+          console.error(`Error: Invalid nickname format for ${nickname}`);
+          return;
+        }
 
-            const matchingRow = data.find((row) => row['Student No'] === studentId);
+        const studentId = idMatch[1];
+        console.log(`Parsed ID ${studentId} for student ${nickname}.`);
 
-            if (matchingRow && matchingRow['Block Number'] === '4') {
-              console.log(`Updating roles for ${nickname}`);
-              student.roles.remove([...student.roles.cache.keys()]);
-              student.roles.add([
-                '1149738387033559140', // test
-                '1149706993813176452', // L6
-                getCourseRole(matchingRow.Course),
-              ]);
-            }
-          });
-        });
+        const matchingRow = data.find((row) => row['Student No'] === studentId);
+
+        if (matchingRow && matchingRow['Block Number'] === '4') {
+          console.log(`Updating roles for ${nickname}`);
+          student.roles.remove([...student.roles.cache.keys()]);
+          student.roles.add([
+            '1149738387033559140', // test
+            '1149706993813176452', // L6
+            getCourseRole(matchingRow.Course),
+          ]);
+        }
+      });
     } catch (error) {
-      console.error('Error reading CSV file:', error);
+      console.error('Error:', error);
     }
 
     await interaction.reply('Roles have been updated.');
