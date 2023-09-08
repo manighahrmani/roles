@@ -9,7 +9,6 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
-    // Add other needed intents here
   ],
 });
 
