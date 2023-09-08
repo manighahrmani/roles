@@ -1,8 +1,9 @@
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
-const fs = require('fs');
-const csv = require('csv-parser');
-const { Client, GatewayIntentBits } = require('discord.js');
+import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v9';
+import fs from 'fs';
+import csv from 'csv-parser';
+import { Client, GatewayIntentBits } from 'discord.js';
+import { TOKEN, SERVER_ID, CLIENT_ID } from './config.js';
 
 const client = new Client({
   intents: [
@@ -12,9 +13,6 @@ const client = new Client({
   ],
 });
 
-const TOKEN = 'MTE0OTc0MDU2NDg4ODE1ODM1OQ.G-2QOr.ybjqnFGNO4W9iFt_yqOmsn7dF4rtyVV9NMxtQE';
-
-// Define the slash command
 const commands = [
   {
     name: 'updateroles',
@@ -22,13 +20,12 @@ const commands = [
   },
 ];
 
-// Register the slash command with Discord
 const rest = new REST({ version: '9' }).setToken(TOKEN);
 
 (async () => {
   try {
     await rest.put(
-      Routes.applicationGuildCommands('1149740564888158359', '760155974467059762'),
+      Routes.applicationGuildCommands(CLIENT_ID, SERVER_ID),
       { body: commands },
     );
   } catch (error) {
@@ -79,7 +76,6 @@ client.on('interactionCreate', async (interaction) => {
             const matchingRow = data.find((row) => row['Student No'] === studentId);
 
             if (matchingRow && matchingRow['Block Number'] === '4') {
-              console.log(`Updating roles for ${nickname}`);
               student.roles.remove([...student.roles.cache.keys()]);
               student.roles.add([
                 '1149738387033559140', // test
@@ -97,7 +93,6 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-// Helper function to map course names to role names
 function getCourseRole(courseName) {
   const courseRoleMap = {
     // your mappings here
