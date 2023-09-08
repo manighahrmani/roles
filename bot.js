@@ -1,8 +1,17 @@
-const Discord = require('discord.js');
 const fs = require('fs');
 const csv = require('csv-parser');
 
-const client = new Discord.Client();
+const { Client, GatewayIntentBits } = require('discord.js');
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    // Add other needed intents here
+  ],
+});
+
+
 const TOKEN = 'MTE0OTc0MDU2NDg4ODE1ODM1OQ.G-2QOr.ybjqnFGNO4W9iFt_yqOmsn7dF4rtyVV9NMxtQE';
 
 client.on('ready', () => {
