@@ -19,6 +19,7 @@ client.on('ready', () => {
 });
 
 client.on('message', async (message) => {
+  console.log(`Received message: ${message.content}`);
   if (message.content === '!updateRoles') {
     const guild = message.guild;
     const placementStudentRole = guild.roles.cache.find((role) => role.name === 'placement-student');
