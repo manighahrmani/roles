@@ -44,7 +44,7 @@ client.on('interactionCreate', async (interaction) => {
 
   if (commandName === 'updateroles') {
     const guild = interaction.guild;
-    const placementStudentRole = guild.roles.cache.find((role) => role.name === 'placement-student');
+    const placementStudentRole = guild.roles.cache.get('761289612068388874');
 
     if (!placementStudentRole) {
       console.error('Error: Role "placement-student" not found.');
@@ -63,6 +63,8 @@ client.on('interactionCreate', async (interaction) => {
             member.roles.cache.has(placementStudentRole.id),
           );
 
+          console.log(`Found ${placementStudents.size} students with the role "placement-student".`);
+
           placementStudents.forEach((student) => {
             const nickname = student.displayName;
             const idMatch = nickname.match(/UP(\d{5,7})/i);
@@ -73,9 +75,12 @@ client.on('interactionCreate', async (interaction) => {
             }
 
             const studentId = idMatch[1];
+            console.log(`Parsed ID ${studentId} for student ${nickname}.`);
+
             const matchingRow = data.find((row) => row['Student No'] === studentId);
 
             if (matchingRow && matchingRow['Block Number'] === '4') {
+              console.log(`Updating roles for ${nickname}`);
               student.roles.remove([...student.roles.cache.keys()]);
               student.roles.add([
                 '1149738387033559140', // test
