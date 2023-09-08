@@ -1,7 +1,7 @@
 import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
-import { TOKEN, SERVER_ID } from './config.js';
+import { TOKEN, SERVER_ID, PATH_TO_CSV } from './config.js';
 
 const client = new Client({
   intents: [
@@ -29,7 +29,7 @@ client.on('ready', async () => {
 
   try {
     const data = [];
-    fs.createReadStream('data.csv')
+    fs.createReadStream(PATH_TO_CSV)
       .pipe(csv())
       .on('data', (row) => {
         data.push(row);

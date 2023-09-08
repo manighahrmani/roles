@@ -1,3 +1,6 @@
+# secret files
+data.csv
+
 # Logs
 logs
 *.log
