@@ -72,9 +72,9 @@ client.on('interactionCreate', async (interaction) => {
       const progressBar = '[' + '='.repeat(progress) + '-'.repeat(progressBarLength - progress) + ']';
       console.log(`Progress: ${progressBar} (${processedMembers}/${totalMembers})`);
 
-      if (member.roles.cache.size > 1) return;
+      if (member.roles.cache.size > 1) return; // Skip members with more than 1 role
 
-      member.roles.add(TEST_ROLE);
+      member.roles.add(TEST_ROLE); // Add test role to member
 
       let errorOccured = false;
       const nickname = member.displayName;
