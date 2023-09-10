@@ -3,8 +3,8 @@ import { Routes } from 'discord-api-types/v9';
 import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
-import { TOKEN, SERVER_ID, CLIENT_ID, PATH_TO_CSV } from './secrets.js';
-import { courseRoleMap } from './courseRoleMap.js';
+import { TOKEN, SERVER_ID, PATH_TO_CSV, CLIENT_ID } from './secrets.js';
+import { SELECT_ROLE, getCourseRole, ADDED_ROLES, BLOCK, REMOVED_ROLES, SELECT_ROLE_NICKNAME } from './config.js';
 
 const client = new Client({
   intents: [
@@ -44,10 +44,12 @@ client.on('interactionCreate', async (interaction) => {
 
   if (commandName === 'updateroles') {
     const guild = interaction.guild;
-    const placementStudentRole = guild.roles.cache.get('761289612068388874');
+    const selectStudentRole = guild.roles.cache.get(SELECT_ROLE);
 
-    if (!placementStudentRole) {
-      console.error('Error: Role "placement-student" not found.');
+    if (!selectStudentRole) {
+      console.error('Error: Role not found.');
+      console.log('Role ID:', SELECT_ROLE);
+      console.log('Role nickname:', SELECT_ROLE_NICKNAME);
       return;
     }
 
@@ -57,7 +59,6 @@ client.on('interactionCreate', async (interaction) => {
         fs.createReadStream(PATH_TO_CSV)
           .pipe(csv())
           .on('data', (row) => {
-            console.log(`Reading row: ${JSON.stringify(row)}`);
             data.push(row);
           })
           .on('end', () => {
@@ -70,7 +71,7 @@ client.on('interactionCreate', async (interaction) => {
       // Fetching members with the role
       await guild.members.fetch();
       const placementStudents = guild.members.cache.filter((member) =>
-        member.roles.cache.has(placementStudentRole.id),
+        member.roles.cache.has(selectStudentRole.id),
       );
 
       console.log(`Found ${placementStudents.size} students with the role "placement-student".`);
@@ -90,18 +91,20 @@ client.on('interactionCreate', async (interaction) => {
         const matchingRow = data.find((row) => row['Student No'] === studentId);
 
         if (!matchingRow) {
-          console.error(`Error: No matching row found for student ID ${studentId}.`);
+          console.error(`Error: No matching row found for student ID "${studentId}".`);
           return;
         }
 
-        if (matchingRow && matchingRow['Block Number'] === '4') {
-          console.log(`Updating roles for ${nickname}`);
-          student.roles.remove([...student.roles.cache.keys()]);
-          student.roles.add([
-            '1149738387033559140', // test
-            '1149706993813176452', // L6
-            getCourseRole(matchingRow.Course),
-          ]);
+        if (matchingRow && matchingRow['Block Number'] === BLOCK) {
+          console.log(`Updating roles for student ${nickname}...`);
+          student.roles.remove(REMOVED_ROLES);
+
+          for (const role of ADDED_ROLES) {
+            student.roles.add(role);
+          }
+
+          console.log(`Adding course role for ${matchingRow.Course} which has ID ${getCourseRole(matchingRow.Course)}`);
+          student.roles.add(getCourseRole(matchingRow.Course));
         }
       });
     } catch (error) {
@@ -111,9 +114,5 @@ client.on('interactionCreate', async (interaction) => {
     await interaction.reply('Roles have been updated.');
   }
 });
-
-function getCourseRole(courseName) {
-  return courseRoleMap[courseName] || null;
-}
 
 client.login(TOKEN);
