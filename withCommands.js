@@ -4,7 +4,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN, SERVER_ID, PATH_TO_CSV, CLIENT_ID } from './secrets.js';
-import { SELECT_ROLE, getCourseRole, ADDED_ROLES, BLOCK, REMOVED_ROLES, SELECT_ROLE_NICKNAME } from './config.js';
+import { SELECT_ROLE, getCourseRole, getBlockRole, REMOVED_ROLES, SELECT_ROLE_NICKNAME, TEST_ROLE, ERROR_ROLE } from './config.js';
 
 const client = new Client({
   intents: [
@@ -70,41 +70,56 @@ client.on('interactionCreate', async (interaction) => {
 
       // Fetching members with the role
       await guild.members.fetch();
-      const placementStudents = guild.members.cache.filter((member) =>
+      const selectedStudents = guild.members.cache.filter((member) =>
         member.roles.cache.has(selectStudentRole.id),
       );
 
-      console.log(`Found ${placementStudents.size} students with the role "placement-student".`);
+      console.log(`Found ${selectedStudents.size} students with the role ${SELECT_ROLE_NICKNAME}.`);
 
-      placementStudents.forEach((student) => {
+      selectedStudents.forEach((student) => {
         const nickname = student.displayName;
         const idMatch = nickname.match(/UP(\d{5,7})/i);
 
+        const rolesToAdd = [TEST_ROLE];
+
         if (!idMatch) {
           console.error(`Error: Invalid nickname format for ${nickname}`);
-          return;
-        }
+          rolesToAdd.push(ERROR_ROLE);
+        } else {
+          const studentId = idMatch[1];
+          console.log(`Parsed ID ${studentId} for student ${nickname}.`);
 
-        const studentId = idMatch[1];
-        console.log(`Parsed ID ${studentId} for student ${nickname}.`);
+          const matchingRow = data.find((row) => row['Student No'] === studentId);
 
-        const matchingRow = data.find((row) => row['Student No'] === studentId);
+          if (!matchingRow) {
+            console.error(`Error: No matching row found for student ID "${studentId}".`);
+            rolesToAdd.push(ERROR_ROLE);
+          } else {
+          // Depending on the block number in the CSV file, add a block role
+            const block = matchingRow['Block Number'];
+            const blockRole = getBlockRole(block);
+            rolesToAdd.push(blockRole);
 
-        if (!matchingRow) {
-          console.error(`Error: No matching row found for student ID "${studentId}".`);
-          return;
-        }
-
-        if (matchingRow && matchingRow['Block Number'] === BLOCK) {
-          console.log(`Updating roles for student ${nickname}...`);
-          student.roles.remove(REMOVED_ROLES);
-
-          for (const role of ADDED_ROLES) {
-            student.roles.add(role);
+            // Depending on the course name in the CSV file, add a course role
+            const course = matchingRow.Course;
+            const courseRole = getCourseRole(course);
+            rolesToAdd.push(courseRole);
           }
+        }
 
-          console.log(`Adding course role for ${matchingRow.Course} which has ID ${getCourseRole(matchingRow.Course)}`);
-          student.roles.add(getCourseRole(matchingRow.Course));
+        console.log(`Updating roles for student ${nickname}...`);
+        student.roles.remove(REMOVED_ROLES);
+
+        for (const role of rolesToAdd) {
+          if (!role) continue;
+
+          try {
+            console.log(`Adding role ${role} to student ${nickname}.`);
+            student.roles.add(role);
+          } catch (error) {
+            console.error(`Error: Could not add role ${role} to student ${nickname}.`);
+            console.error(error);
+          }
         }
       });
     } catch (error) {
