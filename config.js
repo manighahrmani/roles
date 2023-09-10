@@ -1,6 +1,6 @@
 // Select members with this role (ID):
-export const SELECT_ROLE = '760176722636308551';
-export const SELECT_ROLE_NICKNAME = 'L4-softeng';
+export const SELECT_ROLE = '794608682834198578';
+export const SELECT_ROLE_NICKNAME = 'L4-non-se';
 
 // Block roles
 // keys are the block numbers from the CSV file,
@@ -34,7 +34,7 @@ export function getCourseRole(courseName) {
 }
 
 // Add the test role to the selected members
-export const TEST_ROLE = '1150543673428287569'; // test2
+export const TEST_ROLE = '1150553018442469386'; // test3
 
 export const ERROR_ROLE = '1150525936698142810'; // error
 
