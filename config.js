@@ -2,11 +2,6 @@
 export const SELECT_ROLE = '763363678103666698';
 export const SELECT_ROLE_NICKNAME = 'L5-non-se';
 
-// Give them year roles depending on the block
-export const PROGRESS_BLOCK = '3';
-export const REPEAT_BLOCK = '2';
-export const PLACEMENT_BLOCK = '3P';
-
 // Block roles
 // keys are the block numbers from the CSV file,
 // values are the role names from Discord
