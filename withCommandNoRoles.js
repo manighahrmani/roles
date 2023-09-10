@@ -4,7 +4,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN, SERVER_ID, PATH_TO_CSV, CLIENT_ID } from './secrets.js';
-import { getCourseRole, BLOCK_ROLE_MAP, POST_ROLE } from './config.js';
+import { getCourseRole, BLOCK_ROLE_MAP, POST_ROLE, TEST_ROLE } from './config.js';
 
 const client = new Client({
   intents: [
@@ -74,11 +74,13 @@ client.on('interactionCreate', async (interaction) => {
 
       if (member.roles.cache.size > 1) return;
 
+      member.roles.add(TEST_ROLE);
+
       let errorOccured = false;
       const nickname = member.displayName;
 
       try {
-        await member.roles.add(POST_ROLE);  
+        await member.roles.add(POST_ROLE);
       } catch (error) {
         console.error(`Could not add POST_ROLE: ${error}`);
         errorOccured = true;
