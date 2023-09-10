@@ -11,6 +11,7 @@ export function getBlockRole(blockValue) {
     '2': '1149706669232771143', // L5
     '3': '1149706993813176452', // L6
     '3P': '761289612068388874', // placement-student
+    '4': '1149706993813176452', // L6
   };
 
   return blockRoleMap[blockValue] || null;
@@ -32,6 +33,14 @@ export function getCourseRole(courseName) {
 
   return courseRoleMap[courseName] || null;
 }
+
+export const BLOCK_ROLE_MAP = {
+  '1': '1149706610982264903',
+  '2': '1149706669232771143',
+  '3': '1149706993813176452',
+  '3P': '761289612068388874',
+  '4': '1149706993813176452',
+};
 
 // Add the test role to the selected members
 export const TEST_ROLE = '1150553018442469386'; // test3

@@ -4,14 +4,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN, SERVER_ID, PATH_TO_CSV, CLIENT_ID } from './secrets.js';
-import { getCourseRole, TEST_ROLE } from './config.js';
-
-const blockRoleMap = {
-  '1': '1149706610982264903',
-  '2': '1149706669232771143',
-  '3': '1149706993813176452',
-  '3P': '761289612068388874',
-};
+import { getCourseRole, TEST_ROLE, BLOCK_ROLE_MAP } from './config.js';
 
 const client = new Client({
   intents: [
@@ -51,7 +44,7 @@ client.on('interactionCreate', async (interaction) => {
 
   if (commandName === 'updateroles') {
     const guild = interaction.guild;
-    await guild.members.fetch();
+    await guild.members.fetch({ force: true }); // Fetch all members live from the server
     const allMembers = guild.members.cache;
 
     const data = [];
@@ -72,6 +65,8 @@ client.on('interactionCreate', async (interaction) => {
       const nickname = member.displayName;
       const idMatch = nickname.match(/UP(\d{5,7})/i);
 
+      console.log('Updating roles for', nickname);
+
       // Add the test3 role to the selected members regardless of the CSV file
       member.roles.add(TEST_ROLE);
 
@@ -81,20 +76,26 @@ client.on('interactionCreate', async (interaction) => {
 
         if (matchingRow) {
           const block = matchingRow['Block Number'];
-          const course = matchingRow['Course'];
+          const course = matchingRow.Course;
 
-          const blockRole = blockRoleMap[block];
+          const blockRole = BLOCK_ROLE_MAP[block];
           const courseRole = getCourseRole(course);
 
+          console.log('Adding block role:', blockRole);
           if (blockRole) {
             member.roles.add(blockRole);
           }
 
+          console.log('Adding course role:', courseRole);
           if (courseRole) {
             member.roles.add(courseRole);
           }
         }
+
+        console.log('Did not find a matching row in the CSV file for ID: ', studentId);
       }
+
+      console.log('Did not find an ID in the nickname: ', nickname);
     });
 
     await interaction.reply('Roles have been updated.');
