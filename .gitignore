@@ -1,6 +1,7 @@
 # secret files
 data.csv
 config.js
+secrets.js
 
 # Logs
 logs
