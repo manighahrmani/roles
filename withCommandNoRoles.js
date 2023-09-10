@@ -6,11 +6,6 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN, SERVER_ID, PATH_TO_CSV, CLIENT_ID } from './secrets.js';
 import { getCourseRole, BLOCK_ROLE_MAP, POST_ROLE } from './config.js';
 
-let progressBarLength = 50;  // Length of progress bar
-let progress = 0;  // Initialize progress
-let totalMembers = 0;  // Initialize total members
-let processedMembers = 0;  // Initialize processed members
-
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -47,10 +42,15 @@ client.on('interactionCreate', async (interaction) => {
 
   const { commandName } = interaction;
 
-  if (commandName === 'cleanroles') {
+  if (commandName === 'updateroles') {
     const guild = interaction.guild;
-    await guild.members.fetch({ force: true }); // Fetch all members live from the server
+    await guild.members.fetch({ force: true }); 
     const allMembers = guild.members.cache;
+
+    let progressBarLength = 50;
+    let progress = 0;
+    let totalMembers = allMembers.size;
+    let processedMembers = 0;
 
     const data = [];
     await new Promise((resolve, reject) => {
@@ -67,15 +67,25 @@ client.on('interactionCreate', async (interaction) => {
     });
 
     allMembers.forEach(async (member) => {
-      const nickname = member.displayName;
+      processedMembers++;
+      progress = Math.round((processedMembers / totalMembers) * progressBarLength);
+      const progressBar = '[' + '='.repeat(progress) + '-'.repeat(progressBarLength - progress) + ']';
+      console.log(`Progress: ${progressBar} (${processedMembers}/${totalMembers})`);
 
-      // Skip this member if they have more than the default "@everyone" role
       if (member.roles.cache.size > 1) return;
 
-      console.log('Updating roles for', nickname);
+      let errorOccured = false;
+      const nickname = member.displayName;
 
+      try {
+        await member.roles.add(POST_ROLE);  
+      } catch (error) {
+        console.error(`Could not add POST_ROLE: ${error}`);
+        errorOccured = true;
+      }
 
       const idMatch = nickname.match(/UP(\d{5,7})/i);
+
       if (idMatch) {
         const studentId = idMatch[1];
         const matchingRow = data.find((row) => row['Student No'] === studentId);
@@ -84,13 +94,13 @@ client.on('interactionCreate', async (interaction) => {
           const course = matchingRow.Course;
 
           if (course.startsWith('MSC')) {
-            // If course starts with MSC, add the special role and continue
             try {
-              await member.roles.add(POST_ROLE); // Replace with the actual role ID for MSC
+              await member.roles.add('760456815724593152');
               console.log(`Added MSC-specific role for ${nickname}`);
-              return; // Skip the remaining block and course role assignments
+              return;
             } catch (error) {
               console.error(`Could not add MSC-specific role: ${error}`);
+              errorOccured = true;
             }
           }
 
@@ -100,28 +110,33 @@ client.on('interactionCreate', async (interaction) => {
 
           if (blockRole) {
             try {
-              console.log('Adding block role:', blockRole);
-              await member.roles.add(blockRole); // Add error-handling here
+              await member.roles.add(blockRole);
             } catch (error) {
-              console.error('Could not add block role:', error);
+              console.error(`Could not add block role: ${error}`);
+              errorOccured = true;
             }
           }
 
           if (courseRole) {
             try {
-              console.log('Adding course role:', courseRole);
-              await member.roles.add(courseRole); // Add error-handling here
+              await member.roles.add(courseRole);
             } catch (error) {
-              console.error('Could not add course role:', error);
+              console.error(`Could not add course role: ${error}`);
+              errorOccured = true;
             }
           }
         } else {
-          console.log('Did not find a matching row in the CSV file for ID: ', studentId);
+          console.log(`Did not find a matching row in the CSV file for ID: ${studentId}`);
         }
       } else {
-        console.log('Did not find an ID in the nickname: ', nickname);
+        console.log(`Did not find an ID in the nickname: ${nickname}`);
+      }
+
+      if (errorOccured) {
+        fs.appendFileSync('error_log.txt', `An error occurred for ${nickname}: See console for details.\n`);
       }
     });
+
     await interaction.reply('Roles have been updated.');
   }
 });
