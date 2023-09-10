@@ -1,12 +1,13 @@
 // Select members with this role (ID):
-export const SELECT_ROLE = '763363678103666698';
-export const SELECT_ROLE_NICKNAME = 'L5-non-se';
+export const SELECT_ROLE = '760176722636308551';
+export const SELECT_ROLE_NICKNAME = 'L4-softeng';
 
 // Block roles
 // keys are the block numbers from the CSV file,
 // values are the role names from Discord
 export function getBlockRole(blockValue) {
   const blockRoleMap = {
+    '1': '1149706610982264903', // L4
     '2': '1149706669232771143', // L5
     '3': '1149706993813176452', // L6
     '3P': '761289612068388874', // placement-student
@@ -33,7 +34,7 @@ export function getCourseRole(courseName) {
 }
 
 // Add the test role to the selected members
-export const TEST_ROLE = '1150521303745441996'; // test1
+export const TEST_ROLE = '1150543673428287569'; // test2
 
 export const ERROR_ROLE = '1150525936698142810'; // error
 
