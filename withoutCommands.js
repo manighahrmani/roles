@@ -2,6 +2,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN, SERVER_ID, PATH_TO_CSV } from './secrets.js';
+import { SELECT_ROLE, getCourseRole, ADDED_ROLES, BLOCK, REMOVED_ROLES } from './config.js';
 
 const client = new Client({
   intents: [
@@ -20,10 +21,10 @@ client.on('ready', async () => {
     return;
   }
 
-  const placementStudentRole = guild.roles.cache.find((role) => role.name === 'placement-student');
+  const selectedRole = guild.roles.cache.find((role) => role.name === SELECT_ROLE);
 
-  if (!placementStudentRole) {
-    console.error('Error: Role "placement-student" not found.');
+  if (!selectedRole) {
+    console.error('Error: Role "{SELECT_ROLE}" not found.');
     return;
   }
 
@@ -35,12 +36,12 @@ client.on('ready', async () => {
         data.push(row);
       })
       .on('end', () => {
-        const placementStudents = guild.members.cache.filter((member) =>
-          member.roles.cache.has(placementStudentRole.id),
+        const selectedMembers = guild.members.cache.filter((member) =>
+          member.roles.cache.has(selectedRole.id),
         );
 
-        placementStudents.forEach((student) => {
-          const nickname = student.displayName;
+        selectedMembers.forEach((selectedMember) => {
+          const nickname = selectedMember.displayName;
           const idMatch = nickname.match(/UP(\d{5,7})/i);
 
           if (!idMatch) {
@@ -51,13 +52,14 @@ client.on('ready', async () => {
           const studentId = idMatch[1];
           const matchingRow = data.find((row) => row['Student No'] === studentId);
 
-          if (matchingRow && matchingRow['Block Number'] === '4') {
-            student.roles.remove([...student.roles.cache.keys()]);
-            student.roles.add([
-              '1149738387033559140', // test
-              '1149706993813176452', // L6
-              getCourseRole(matchingRow.Course),
-            ]);
+          if (matchingRow && matchingRow['Block Number'] === BLOCK) {
+            selectedMember.roles.remove(REMOVED_ROLES);
+
+            for (const role of ADDED_ROLES) {
+              selectedMember.roles.add(role);
+            }
+
+            selectedMember.roles.add(getCourseRole(matchingRow.Course));
           }
         });
       });
@@ -65,19 +67,5 @@ client.on('ready', async () => {
     console.error('Error reading CSV file:', error);
   }
 });
-
-function getCourseRole(courseName) {
-  const courseRoleMap = {
-    'BSC (HONS) COMPUTER SCIENCE': 'compsi',
-    'BSC (HONS) BUSINESS INFORMATION SYSTEMS': 'bis',
-    'BSC (HONS) COMPUTING': 'computing',
-    'BSC (HONS) SOFTWARE ENGINEERING': 'softeng',
-    'BSC (HONS) COMPUTER NETWORKS': 'networks-bsc',
-    'BSC (HONS) DATA SCIENCE AND ANALYTICS': 'datascience-bsc',
-    'BSC (HONS) CYBER SECURITY AND FORENSIC COMPUTING': 'cyfor',
-  };
-
-  return courseRoleMap[courseName] || null;
-}
 
 client.login(TOKEN);
