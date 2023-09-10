@@ -3,7 +3,7 @@ import { Routes } from 'discord-api-types/v9';
 import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
-import { TOKEN, SERVER_ID, CLIENT_ID, PATH_TO_CSV } from './config.js';
+import { TOKEN, SERVER_ID, CLIENT_ID, PATH_TO_CSV } from './secrets.js';
 import { courseRoleMap } from './courseRoleMap.js';
 
 const client = new Client({

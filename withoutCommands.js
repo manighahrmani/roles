@@ -1,7 +1,7 @@
 import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
-import { TOKEN, SERVER_ID, PATH_TO_CSV } from './config.js';
+import { TOKEN, SERVER_ID, PATH_TO_CSV } from './secrets.js';
 
 const client = new Client({
   intents: [
