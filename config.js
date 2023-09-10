@@ -23,6 +23,7 @@ export function getBlockRole(blockValue) {
 export function getCourseRole(courseName) {
   const courseRoleMap = {
     'BSC (HONS) COMPUTER SCIENCE': '1149706797553303655', // comsci
+    'MENG COMPUTER SCIENCE': '1149706797553303655', // comsci
     'BSC (HONS) BUSINESS INFORMATION SYSTEMS': '1149707295656267789', // bis
     'BSC (HONS) COMPUTING': '1149707654906789889', // computing
     'BSC (HONS) SOFTWARE ENGINEERING': '1149707019692036156', // softeng
@@ -40,6 +41,8 @@ export const BLOCK_ROLE_MAP = {
   '3': '1149706993813176452',
   '3P': '761289612068388874',
   '4': '1149706993813176452',
+  '4A': '861998118102368276',
+  '5': '861998118102368276',
 };
 
 // Add the test role to the selected members

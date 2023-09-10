@@ -61,14 +61,17 @@ client.on('interactionCreate', async (interaction) => {
         .on('error', reject);
     });
 
-    allMembers.forEach((member) => {
+    allMembers.forEach(async (member) => {
       const nickname = member.displayName;
       const idMatch = nickname.match(/UP(\d{5,7})/i);
 
       console.log('Updating roles for', nickname);
 
-      // Add the test3 role to the selected members regardless of the CSV file
-      member.roles.add(TEST_ROLE);
+      try {
+        await member.roles.add(TEST_ROLE); // Add error-handling here
+      } catch (error) {
+        console.error('Could not add TEST_ROLE:', error);
+      }
 
       if (idMatch) {
         const studentId = idMatch[1];
@@ -81,21 +84,29 @@ client.on('interactionCreate', async (interaction) => {
           const blockRole = BLOCK_ROLE_MAP[block];
           const courseRole = getCourseRole(course);
 
-          console.log('Adding block role:', blockRole);
           if (blockRole) {
-            member.roles.add(blockRole);
+            try {
+              console.log('Adding block role:', blockRole);
+              await member.roles.add(blockRole); // Add error-handling here
+            } catch (error) {
+              console.error('Could not add block role:', error);
+            }
           }
 
-          console.log('Adding course role:', courseRole);
           if (courseRole) {
-            member.roles.add(courseRole);
+            try {
+              console.log('Adding course role:', courseRole);
+              await member.roles.add(courseRole); // Add error-handling here
+            } catch (error) {
+              console.error('Could not add course role:', error);
+            }
           }
+        } else {
+          console.log('Did not find a matching row in the CSV file for ID: ', studentId);
         }
-
-        console.log('Did not find a matching row in the CSV file for ID: ', studentId);
+      } else {
+        console.log('Did not find an ID in the nickname: ', nickname);
       }
-
-      console.log('Did not find an ID in the nickname: ', nickname);
     });
 
     await interaction.reply('Roles have been updated.');
