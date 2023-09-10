@@ -1,13 +1,28 @@
 // Select members with this role (ID):
-export const SELECT_ROLE = '761289612068388874';
-export const SELECT_ROLE_NICKNAME = 'placement-student';
+export const SELECT_ROLE = '763363678103666698';
+export const SELECT_ROLE_NICKNAME = 'L5-non-se';
 
-// Who have this block number in the CSV file:
-export const BLOCK = '4';
+// Give them year roles depending on the block
+export const PROGRESS_BLOCK = '3';
+export const REPEAT_BLOCK = '2';
+export const PLACEMENT_BLOCK = '3P';
+
+// Block roles
+// keys are the block numbers from the CSV file,
+// values are the role names from Discord
+export function getBlockRole(blockValue) {
+  const blockRoleMap = {
+    '2': '1149706669232771143', // L5
+    '3': '1149706993813176452', // L6
+    '3P': '761289612068388874', // placement-student
+  };
+
+  return blockRoleMap[blockValue] || null;
+}
 
 // Course roles
 // keys are the course names from the CSV file,
-// values are the role names from Discord
+// values are the role names from Discor
 export function getCourseRole(courseName) {
   const courseRoleMap = {
     'BSC (HONS) COMPUTER SCIENCE': '1149706797553303655', // comsci
@@ -22,13 +37,12 @@ export function getCourseRole(courseName) {
   return courseRoleMap[courseName] || null;
 }
 
-// Roles (ID) to add to selected members
-export const ADDED_ROLES = [
-  '1150521303745441996', // test1
-  '1149706993813176452', // L6
-];
+// Add the test role to the selected members
+export const TEST_ROLE = '1150521303745441996'; // test1
+
+export const ERROR_ROLE = '1150525936698142810'; // error
 
 // Roles (ID) to remove from selected members
 export const REMOVED_ROLES = [
-  '761289612068388874', // placement-student
+  SELECT_ROLE,
 ];
