@@ -6,6 +6,11 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN, SERVER_ID, PATH_TO_CSV, CLIENT_ID } from './secrets.js';
 import { getCourseRole, BLOCK_ROLE_MAP, POST_ROLE } from './config.js';
 
+let progressBarLength = 50;  // Length of progress bar
+let progress = 0;  // Initialize progress
+let totalMembers = 0;  // Initialize total members
+let processedMembers = 0;  // Initialize processed members
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
