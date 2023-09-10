@@ -4,7 +4,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN, SERVER_ID, PATH_TO_CSV, CLIENT_ID } from './secrets.js';
-import { getCourseRole, TEST_ROLE, BLOCK_ROLE_MAP, POST_ROLE } from './config.js';
+import { getCourseRole, BLOCK_ROLE_MAP, POST_ROLE } from './config.js';
 
 const client = new Client({
   intents: [
@@ -69,11 +69,6 @@ client.on('interactionCreate', async (interaction) => {
 
       console.log('Updating roles for', nickname);
 
-      try {
-        await member.roles.add(TEST_ROLE); // Add error-handling here
-      } catch (error) {
-        console.error('Could not add TEST_ROLE:', error);
-      }
 
       const idMatch = nickname.match(/UP(\d{5,7})/i);
       if (idMatch) {
