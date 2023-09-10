@@ -4,7 +4,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN, SERVER_ID, PATH_TO_CSV, CLIENT_ID } from './secrets.js';
-import { getCourseRole, TEST_ROLE, BLOCK_ROLE_MAP } from './config.js';
+import { getCourseRole, TEST_ROLE, BLOCK_ROLE_MAP, POST_ROLE } from './config.js';
 
 const client = new Client({
   intents: [
@@ -86,7 +86,7 @@ client.on('interactionCreate', async (interaction) => {
           if (course.startsWith('MSC')) {
             // If course starts with MSC, add the special role and continue
             try {
-              await member.roles.add('760456815724593152'); // Replace with the actual role ID for MSC
+              await member.roles.add(POST_ROLE); // Replace with the actual role ID for MSC
               console.log(`Added MSC-specific role for ${nickname}`);
               return; // Skip the remaining block and course role assignments
             } catch (error) {

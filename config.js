@@ -54,3 +54,5 @@ export const ERROR_ROLE = '1150525936698142810'; // error
 export const REMOVED_ROLES = [
   SELECT_ROLE,
 ];
+
+export const POST_ROLE = '760456815724593152'; // post-grad
