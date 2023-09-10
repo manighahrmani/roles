@@ -42,7 +42,7 @@ client.on('interactionCreate', async (interaction) => {
 
   const { commandName } = interaction;
 
-  if (commandName === 'updateroles') {
+  if (commandName === 'cleanroles') {
     const guild = interaction.guild;
     await guild.members.fetch({ force: true }); // Fetch all members live from the server
     const allMembers = guild.members.cache;
@@ -63,7 +63,9 @@ client.on('interactionCreate', async (interaction) => {
 
     allMembers.forEach(async (member) => {
       const nickname = member.displayName;
-      const idMatch = nickname.match(/UP(\d{5,7})/i);
+
+      // Skip this member if they have more than the default "@everyone" role
+      if (member.roles.cache.size > 1) return;
 
       console.log('Updating roles for', nickname);
 
@@ -73,14 +75,26 @@ client.on('interactionCreate', async (interaction) => {
         console.error('Could not add TEST_ROLE:', error);
       }
 
+      const idMatch = nickname.match(/UP(\d{5,7})/i);
       if (idMatch) {
         const studentId = idMatch[1];
         const matchingRow = data.find((row) => row['Student No'] === studentId);
 
         if (matchingRow) {
-          const block = matchingRow['Block Number'];
           const course = matchingRow.Course;
 
+          if (course.startsWith('MSC')) {
+            // If course starts with MSC, add the special role and continue
+            try {
+              await member.roles.add('760456815724593152'); // Replace with the actual role ID for MSC
+              console.log(`Added MSC-specific role for ${nickname}`);
+              return; // Skip the remaining block and course role assignments
+            } catch (error) {
+              console.error(`Could not add MSC-specific role: ${error}`);
+            }
+          }
+
+          const block = matchingRow['Block Number'];
           const blockRole = BLOCK_ROLE_MAP[block];
           const courseRole = getCourseRole(course);
 
@@ -108,7 +122,6 @@ client.on('interactionCreate', async (interaction) => {
         console.log('Did not find an ID in the nickname: ', nickname);
       }
     });
-
     await interaction.reply('Roles have been updated.');
   }
 });
