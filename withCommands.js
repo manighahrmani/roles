@@ -80,7 +80,9 @@ client.on('interactionCreate', async (interaction) => {
         const nickname = student.displayName;
         const idMatch = nickname.match(/UP(\d{5,7})/i);
 
-        const rolesToAdd = [TEST_ROLE];
+        const rolesToAdd = [];
+
+        rolesToAdd.push(TEST_ROLE);
 
         if (!idMatch) {
           console.error(`Error: Invalid nickname format for ${nickname}`);
@@ -111,15 +113,11 @@ client.on('interactionCreate', async (interaction) => {
         student.roles.remove(REMOVED_ROLES);
 
         for (const role of rolesToAdd) {
-          if (!role) continue;
+          // Skip null roles
+          if (role === null) continue;
 
-          try {
-            console.log(`Adding role ${role} to student ${nickname}.`);
-            student.roles.add(role);
-          } catch (error) {
-            console.error(`Error: Could not add role ${role} to student ${nickname}.`);
-            console.error(error);
-          }
+          console.log(`Adding role ${role} to student ${nickname}.`);
+          student.roles.add(role);
         }
       });
     } catch (error) {
