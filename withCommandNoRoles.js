@@ -44,12 +44,12 @@ client.on('interactionCreate', async (interaction) => {
 
   if (commandName === 'updateroles') {
     const guild = interaction.guild;
-    await guild.members.fetch({ force: true }); 
+    await guild.members.fetch({ force: true });
     const allMembers = guild.members.cache;
 
-    let progressBarLength = 50;
+    const progressBarLength = 50;
     let progress = 0;
-    let totalMembers = allMembers.size;
+    const totalMembers = allMembers.size;
     let processedMembers = 0;
 
     const data = [];
@@ -95,16 +95,16 @@ client.on('interactionCreate', async (interaction) => {
         if (matchingRow) {
           const course = matchingRow.Course;
 
-          if (course.startsWith('MSC')) {
-            try {
-              await member.roles.add('760456815724593152');
-              console.log(`Added MSC-specific role for ${nickname}`);
-              return;
-            } catch (error) {
-              console.error(`Could not add MSC-specific role: ${error}`);
-              errorOccured = true;
-            }
-          }
+          //   if (course.startsWith('MSC')) {
+          //     try {
+          //       await member.roles.add('760456815724593152');
+          //       console.log(`Added MSC-specific role for ${nickname}`);
+          //       return;
+          //     } catch (error) {
+          //       console.error(`Could not add MSC-specific role: ${error}`);
+          //       errorOccured = true;
+          //     }
+          //   }
 
           const block = matchingRow['Block Number'];
           const blockRole = BLOCK_ROLE_MAP[block];
