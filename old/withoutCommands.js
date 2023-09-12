@@ -2,7 +2,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN, SERVER_ID, PATH_TO_CSV } from './secrets.js';
-import { SELECT_ROLE, getCourseRole, ADDED_ROLES, BLOCK, REMOVED_ROLES } from './config.js';
+import { SELECT_ROLE, getCourseRole, ADDED_ROLES, BLOCK, REMOVED_ROLES } from '../config.js';
 
 const client = new Client({
   intents: [

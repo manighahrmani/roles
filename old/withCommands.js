@@ -4,7 +4,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN, SERVER_ID, PATH_TO_CSV, CLIENT_ID } from './secrets.js';
-import { SELECT_ROLE, getCourseRole, getBlockRole, REMOVED_ROLES, SELECT_ROLE_NICKNAME, TEST_ROLE, ERROR_ROLE } from './config.js';
+import { SELECT_ROLE, getCourseRole, getBlockRole, REMOVED_ROLES, SELECT_ROLE_NICKNAME, TEST_ROLE, ERROR_ROLE } from '../config.js';
 
 const client = new Client({
   intents: [
