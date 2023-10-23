@@ -1,0 +1,94 @@
+import { Client, GatewayIntentBits } from "discord.js";
+import fs from "fs";
+import { TOKEN, SERVER_ID } from "./secrets.js";
+
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
+});
+
+const SOFTENG_ROLE_ID = "1149707019692036156"; // Role ID for softeng
+const LEVEL_5_ROLE_ID = "1149706669232771143"; // Role ID for Level 5
+const WEB_PRO_ROLE_ID = "1151210884564262993"; // Role ID for web-pro
+const UX_DESIGN_ROLE_ID = "1151210947512373268"; // Role ID for ux-design
+
+/**
+ * Logs the bot in and sets up event handlers.
+ */
+async function init() {
+  client.once("ready", onReady);
+  await client.login(TOKEN);
+}
+
+/**
+ * Handler for the 'ready' event.
+ */
+async function onReady() {
+  console.log(`Logged in as ${client.user.tag}`);
+
+  const guild = client.guilds.cache.get(SERVER_ID);
+  if (!guild) {
+    console.log("Guild not found");
+    return;
+  }
+
+  // Fetch all guild members
+  await guild.members.fetch();
+
+  const membersToUpdate = findMembersToUpdate(guild);
+  console.log(`Total members to update: ${membersToUpdate.size}`);
+
+  await updateMembersRoles(membersToUpdate, guild);
+}
+
+/**
+ * Finds members who have both the softeng and Level 5 roles.
+ * @param {Guild} guild - The guild to search within.
+ * @returns {Collection<Snowflake, GuildMember>} - The members to update.
+ */
+function findMembersToUpdate(guild) {
+  return guild.members.cache.filter(
+    (member) =>
+      member.roles.cache.has(SOFTENG_ROLE_ID) &&
+      member.roles.cache.has(LEVEL_5_ROLE_ID)
+  );
+}
+
+/**
+ * Updates the roles of the specified members and logs the updates to a file.
+ * @param {Collection<Snowflake, GuildMember>} membersToUpdate - The members to update.
+ * @param {Guild} guild - The guild the members belong to.
+ */
+async function updateMembersRoles(membersToUpdate, guild) {
+  for (const member of membersToUpdate.values()) {
+    try {
+      await member.roles.add([WEB_PRO_ROLE_ID, UX_DESIGN_ROLE_ID]);
+      const logEntry = createLogEntry(member, guild);
+      fs.appendFileSync("log.txt", logEntry);
+    } catch (error) {
+      console.error(
+        `Could not update roles for ${member.displayName}: ${error}`
+      );
+    }
+  }
+}
+
+/**
+ * Creates a log entry for a member whose roles were updated.
+ * @param {GuildMember} member - The member whose roles were updated.
+ * @param {Guild} guild - The guild the member belongs to.
+ * @returns {string} - The log entry.
+ */
+function createLogEntry(member, guild) {
+  const oldRoles = [SOFTENG_ROLE_ID, LEVEL_5_ROLE_ID]
+    .map((id) => guild.roles.cache.get(id)?.name)
+    .join(", ");
+
+  const newRoles = [WEB_PRO_ROLE_ID, UX_DESIGN_ROLE_ID]
+    .map((id) => guild.roles.cache.get(id)?.name)
+    .join(", ");
+
+  return `Updated ${member.displayName}. Roles: ${oldRoles} => Added: ${newRoles}\n`;
+}
+
+// Call the init function to start the bot
+init();

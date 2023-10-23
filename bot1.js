@@ -35,7 +35,15 @@ async function getMembersToUpdate(guild) {
 async function updateMemberRoles(member, guild) {
   try {
     await member.roles.add([WEB_PRO_ROLE_ID, UX_DESIGN_ROLE_ID]);
-    const logEntry = `Updated ${member.displayName}. Roles: ${[SOFTENG_ROLE_ID, LEVEL_5_ROLE_ID].map(id => guild.roles.cache.get(id)?.name).join(', ')} => Added: ${[WEB_PRO_ROLE_ID, UX_DESIGN_ROLE_ID].map(id => guild.roles.cache.get(id)?.name).join(', ')}\n`;
+    const oldRoles = [SOFTENG_ROLE_ID, LEVEL_5_ROLE_ID]
+      .map(id => guild.roles.cache.get(id)?.name)
+      .join(', ');
+
+    const newRoles = [WEB_PRO_ROLE_ID, UX_DESIGN_ROLE_ID]
+      .map(id => guild.roles.cache.get(id)?.name)
+      .join(', ');
+
+    const logEntry = `Updated ${member.displayName}. Roles: ${oldRoles} => Added: ${newRoles}\n`;
     fs.appendFileSync('log.txt', logEntry);
   } catch (error) {
     console.error(`Could not update roles for ${member.displayName}: ${error}`);
