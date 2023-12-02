@@ -26,7 +26,7 @@ client.on('ready', async () => {
   await guild.members.fetch();
 
   const membersToUpdate = guild.members.cache.filter(member =>
-    member.roles.cache.has(SOFTENG_ROLE_ID) &&
+    member.roles.cache.has(COMPSCI_ROLE_ID) &&
     member.roles.cache.has(LEVEL_5_ROLE_ID),
   );
 
@@ -34,7 +34,7 @@ client.on('ready', async () => {
 
   membersToUpdate.forEach(async (member) => {
     try {
-      await member.roles.add([WEB_PRO_ROLE_ID, UX_DESIGN_ROLE_ID]);
+      await member.roles.add([FUN_PRO_ROLE_ID]);
       const logEntry = `Updated ${member.displayName}. Roles: ${[COMPSCI_ROLE_ID, LEVEL_5_ROLE_ID].map(id => guild.roles.cache.get(id)?.name).join(', ')} => Added: ${[FUN_PRO_ROLE_ID].map(id => guild.roles.cache.get(id)?.name).join(', ')}\n`;
       fs.appendFileSync('log.txt', logEntry);
     } catch (error) {
