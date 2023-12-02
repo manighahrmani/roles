@@ -9,10 +9,9 @@ const client = new Client({
   ],
 });
 
-const SOFTENG_ROLE_ID = '1149707019692036156'; // Role ID for softeng
+const COMPSCI_ROLE_ID = '1149706797553303655'; // Role ID for computer science
 const LEVEL_5_ROLE_ID = '1149706669232771143'; // Role ID for Level 5
-const WEB_PRO_ROLE_ID = '1151210884564262993'; // Role ID for web-pro
-const UX_DESIGN_ROLE_ID = '1151210947512373268'; // Role ID for ux-design
+const FUN_PRO_ROLE_ID = '1150938732229316649'; // Role ID for fun prog
 
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}`);
@@ -36,7 +35,7 @@ client.on('ready', async () => {
   membersToUpdate.forEach(async (member) => {
     try {
       await member.roles.add([WEB_PRO_ROLE_ID, UX_DESIGN_ROLE_ID]);
-      const logEntry = `Updated ${member.displayName}. Roles: ${[SOFTENG_ROLE_ID, LEVEL_5_ROLE_ID].map(id => guild.roles.cache.get(id)?.name).join(', ')} => Added: ${[WEB_PRO_ROLE_ID, UX_DESIGN_ROLE_ID].map(id => guild.roles.cache.get(id)?.name).join(', ')}\n`;
+      const logEntry = `Updated ${member.displayName}. Roles: ${[COMPSCI_ROLE_ID, LEVEL_5_ROLE_ID].map(id => guild.roles.cache.get(id)?.name).join(', ')} => Added: ${[FUN_PRO_ROLE_ID].map(id => guild.roles.cache.get(id)?.name).join(', ')}\n`;
       fs.appendFileSync('log.txt', logEntry);
     } catch (error) {
       console.error(`Could not update roles for ${member.displayName}: ${error}`);
